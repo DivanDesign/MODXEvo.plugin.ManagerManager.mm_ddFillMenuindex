@@ -30,17 +30,20 @@ function mm_ddFillMenuindex($parent = ''){
 		}
 		
 		//Получаем наименьший свободный menuindex у документов данного родителя. Кхэм, запрос писался глубокой ночью, так что за его оптимальность отвечать сложно ;-)
-		$freeMenuIndex = $modx->db->getValue("
-		SELECT min(`sc`.`menuindex`)
-		FROM `dd_site_content` AS `sc`
-			LEFT JOIN (
-				SELECT `sc1`.`menuindex`
-				FROM `dd_site_content` AS `sc1`, `dd_site_content` AS `sc2`
-				WHERE `sc1`.`menuindex` + 1 = `sc2`.`menuindex` AND `sc1`.`parent` = $pid AND `sc2`.`parent` = $pid
-			) AS `z`
-			ON `sc`.`menuindex` = `z`.`menuindex`
-		WHERE `z`.`menuindex` IS NULL AND `sc`.`parent` = $pid
-		");
+		$freeMenuIndex = $modx->db->getValue('
+			SELECT
+				min(`sc`.`menuindex`)
+			FROM `dd_site_content` AS `sc`
+				LEFT JOIN (
+					SELECT `sc1`.`menuindex`
+					FROM `dd_site_content` AS `sc1`, `dd_site_content` AS `sc2`
+					WHERE `sc1`.`menuindex` + 1 = `sc2`.`menuindex` AND `sc1`.`parent` = '.$pid.' AND `sc2`.`parent` = '.$pid.'
+				) AS `z`
+				ON `sc`.`menuindex` = `z`.`menuindex`
+			WHERE
+				`z`.`menuindex` IS NULL AND
+				`sc`.`parent` = '.$pid.'
+		');
 		
 		//Если такового нет (дочерних вообще нет). P.S.: Если он пуст, то переопределять нет смысла, там всё хорошо и так поставится.
 		if (!is_null($freeMenuIndex)){

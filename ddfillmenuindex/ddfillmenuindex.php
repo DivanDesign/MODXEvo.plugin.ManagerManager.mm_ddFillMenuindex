@@ -3,7 +3,9 @@
  * mm_ddFillMenuindex
  * @version 1.0 (2013-03-14)
  * 
- * @desc Widget sets the minimum free menuindex for a new documents. By default in MODX menuindex for a new documents equals just simply count of children, which is not always convenient.
+ * @desc A widget for the ManagerManager plugin that was made to keep “menuindex” in order:
+ * 1. “menuindex” of a new document is set equal to a free minimal value within its parent (“menuindex”, by default, used to be the number of siblings which was not always preferred).
+ * 2. “menuindex” is incremented automatically by 1 on document duplicate.
  * 
  * @uses ManagerManager plugin 0.5.
  * 
@@ -50,6 +52,16 @@ function mm_ddFillMenuindex($parent = ''){
 			//Задаём следующим
 			$content['menuindex'] = $freeMenuIndex + 1;
 		}
+	}else if ($e->name == 'OnDocDuplicate'){
+		//Инкрементируем menuindex при копировании
+		$modx->db->query('
+			UPDATE
+				'.ddTools::$tables['site_content'].'
+			SET
+				`menuindex` = `menuindex` + 1
+			WHERE
+				`id` = '.$e->params['new_id'].'
+		');
 	}
 }
 ?>

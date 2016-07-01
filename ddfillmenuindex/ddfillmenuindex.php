@@ -20,6 +20,7 @@
 function mm_ddFillMenuindex($parent = ''){
 	global $modx, $content;
 	$e = &$modx->Event;
+	$siteContentTable = ddTools::$tables['site_content'];
 	
 	//Если у нас правильное событие и это создание документа
 	if ($e->name == 'OnDocFormPrerender' && $_REQUEST['a'] == 4){
@@ -35,10 +36,10 @@ function mm_ddFillMenuindex($parent = ''){
 		$freeMenuIndex = $modx->db->getValue('
 			SELECT
 				min(`sc`.`menuindex`)
-			FROM `dd_site_content` AS `sc`
+			FROM '. $siteContentTable .' AS `sc`
 				LEFT JOIN (
 					SELECT `sc1`.`menuindex`
-					FROM `dd_site_content` AS `sc1`, `dd_site_content` AS `sc2`
+					FROM '. $siteContentTable .' AS `sc1`, '. $siteContentTable .' AS `sc2`
 					WHERE `sc1`.`menuindex` + 1 = `sc2`.`menuindex` AND `sc1`.`parent` = '.$pid.' AND `sc2`.`parent` = '.$pid.'
 				) AS `z`
 				ON `sc`.`menuindex` = `z`.`menuindex`
@@ -56,7 +57,7 @@ function mm_ddFillMenuindex($parent = ''){
 		//Инкрементируем menuindex при копировании
 		$modx->db->query('
 			UPDATE
-				'.ddTools::$tables['site_content'].'
+				'. $siteContentTable .'
 			SET
 				`menuindex` = `menuindex` + 1
 			WHERE

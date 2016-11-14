@@ -7,7 +7,7 @@
  * 1. “menuindex” of a new document is set equal to a free minimal value within its parent (“menuindex”, by default, used to be the number of siblings which was not always preferred).
  * 2. “menuindex” is incremented automatically by 1 on document duplicate.
  * 
- * @uses ManagerManager plugin 0.5.
+ * @uses MODXEvo.plugin.ManagerManager >= 0.5.
  * 
  * @param $parentId {integer|''} - Id of parent document. Default: '' (all parents).
  * 
@@ -19,14 +19,19 @@
 function mm_ddFillMenuindex($parentId = ''){
 	global $modx, $content;
 	$e = &$modx->Event;
-	$siteContentTable = ddTools::$tables['site_content'];
 	
 	//Если у нас правильное событие и это создание документа
-	if ($e->name == 'OnDocFormPrerender' && $_REQUEST['a'] == 4){
+	if (
+		$e->name == 'OnDocFormPrerender' &&
+		$_REQUEST['a'] == 4
+	){
 		$documentParentId = intval($_REQUEST['pid']);
 		
 		//Если задан конкретный родитель, для которого должен работать виджет и он не совпадает с тем, что сейчас
-		if ($parentId !== '' && $parentId != $documentParentId){
+		if (
+			$parentId !== '' &&
+			$parentId != $documentParentId
+		){
 			//Давай, до свидания!
 			return;
 		}
@@ -35,10 +40,10 @@ function mm_ddFillMenuindex($parentId = ''){
 		$freeMenuIndex = $modx->db->getValue('
 			SELECT
 				min(`sc`.`menuindex`)
-			FROM '.$siteContentTable.' AS `sc`
+			FROM '.ddTools::$tables['site_content'].' AS `sc`
 				LEFT JOIN (
 					SELECT `sc1`.`menuindex`
-					FROM '.$siteContentTable.' AS `sc1`, '.$siteContentTable.' AS `sc2`
+					FROM '.ddTools::$tables['site_content'].' AS `sc1`, '.ddTools::$tables['site_content'].' AS `sc2`
 					WHERE `sc1`.`menuindex` + 1 = `sc2`.`menuindex` AND `sc1`.`parent` = '.$documentParentId.' AND `sc2`.`parent` = '.$documentParentId.'
 				) AS `z`
 				ON `sc`.`menuindex` = `z`.`menuindex`
@@ -56,7 +61,7 @@ function mm_ddFillMenuindex($parentId = ''){
 		//Инкрементируем menuindex при копировании
 		$modx->db->query('
 			UPDATE
-				'.$siteContentTable.'
+				'.ddTools::$tables['site_content'].'
 			SET
 				`menuindex` = `menuindex` + 1
 			WHERE

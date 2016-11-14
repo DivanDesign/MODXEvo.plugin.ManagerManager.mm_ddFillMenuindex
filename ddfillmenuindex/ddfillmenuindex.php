@@ -1,7 +1,7 @@
 <?php
 /**
  * mm_ddFillMenuindex
- * @version 1.1.1 (2016-07-01)
+ * @version 1.2 (2016-11-15)
  * 
  * @desc A widget for the ManagerManager plugin that was made to keep “menuindex” in order:
  * 1. “menuindex” of a new document is set equal to a free minimal value within its parent (“menuindex”, by default, used to be the number of siblings which was not always preferred).
@@ -13,7 +13,7 @@
  * @param $params {array_associative|stdClass} — The object of params. @required
  * @param $params['parentId'] {integer|''} — Id of parent document. Default: '' (all parents).
  * 
- * @link http://code.divandesign.biz/modx/mm_ddfillmenuindex/1.1.1
+ * @link http://code.divandesign.biz/modx/mm_ddfillmenuindex/1.2
  * 
  * @copyright 2013–2016 DivanDesign {@link http://www.DivanDesign.biz }
  */

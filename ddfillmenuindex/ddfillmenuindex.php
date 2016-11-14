@@ -7,16 +7,37 @@
  * 1. “menuindex” of a new document is set equal to a free minimal value within its parent (“menuindex”, by default, used to be the number of siblings which was not always preferred).
  * 2. “menuindex” is incremented automatically by 1 on document duplicate.
  * 
- * @uses MODXEvo.plugin.ManagerManager >= 0.5.
+ * @uses PHP >= 5.4.
+ * @uses MODXEvo.plugin.ManagerManager >= 0.7.
  * 
- * @param $parentId {integer|''} - Id of parent document. Default: '' (all parents).
+ * @param $params {array_associative|stdClass} — The object of params. @required
+ * @param $params['parentId'] {integer|''} — Id of parent document. Default: '' (all parents).
  * 
  * @link http://code.divandesign.biz/modx/mm_ddfillmenuindex/1.1.1
  * 
  * @copyright 2013–2016 DivanDesign {@link http://www.DivanDesign.biz }
  */
 
-function mm_ddFillMenuindex($parentId = ''){
+function mm_ddFillMenuindex($params = []){
+	//For backward compatibility
+	if (
+		!is_array($params) &&
+		!is_object($params)
+	){
+		//Convert ordered list of params to named
+		$params = ddTools::orderedParamsToNamed([
+			'paramsList' => func_get_args(),
+			'compliance' => [
+				'parentId'
+			]
+		]);
+	}
+	
+	//Defaults
+	$params = (object) array_merge([
+		'parentId' => ''
+	], (array) $params);
+	
 	global $modx, $content;
 	$e = &$modx->Event;
 	
@@ -29,8 +50,8 @@ function mm_ddFillMenuindex($parentId = ''){
 		
 		//Если задан конкретный родитель, для которого должен работать виджет и он не совпадает с тем, что сейчас
 		if (
-			$parentId !== '' &&
-			$parentId != $documentParentId
+			$params->parentId !== '' &&
+			$params->parentId != $documentParentId
 		){
 			//Давай, до свидания!
 			return;
